@@ -31,8 +31,8 @@ Kana Homework Helper is a web application that assists users in learning and pra
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/kana-homework-helper.git
-   cd kana-homework-helper
+   git clone https://github.com/yourusername/kana-practice-helper.git
+   cd kana-practice-helper
    ```
 
 2. Install dependencies:

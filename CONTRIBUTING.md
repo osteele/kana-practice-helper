@@ -6,8 +6,8 @@ Thank you for your interest in contributing to Kana Homework Helper! This docume
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/osteele/kana-homework-helper.git
-   cd kana-homework-helper
+   git clone https://github.com/osteele/kana-practice-helper.git
+   cd kana-practice-helper
    ```
 
 2. Install dependencies:
@@ -31,7 +31,7 @@ Thank you for your interest in contributing to Kana Homework Helper! This docume
 ## Project Structure
 
 ```
-kana-homework-helper/
+kana-practice-helper/
 ├── docs/               # Documentation files
 ├── src/               # Source code
 │   ├── components/    # React components

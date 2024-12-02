@@ -7,6 +7,7 @@ import { ApiKeyInput } from './ApiKeyInput'
 import { analyzeImage } from '../services/openai'
 import type { HomeworkFeedback } from '../services/openai'
 import { MarkdownContent } from './MarkdownContent'
+import { Header } from './Header'
 
 const kanaCharacters = ['あ', 'い', 'う', 'え', 'お', 'か', 'き', 'く', 'け', 'こ']
 
@@ -117,49 +118,52 @@ export default function HomeworkHelper() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="mx-auto max-w-3xl space-y-6">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold">Kana Homework Helper</h1>
-          <div className={`mt-4 max-w-2xl mx-auto overflow-hidden transition-all duration-300 ease-in-out ${
-            !loading && !feedback ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-          }`}>
-            <MarkdownContent 
-              contentPath="/src/content/home-description.md"
-              className="text-left"
-            />
-            <p className="mt-2 text-gray-600">
-              Upload your kana homework for instant feedback and practice suggestions
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <main className="p-8">
+        <div className="mx-auto max-w-3xl space-y-6">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold">Kana Homework Helper</h1>
+            <div className={`mt-4 max-w-2xl mx-auto overflow-hidden transition-all duration-300 ease-in-out ${
+              !loading && !feedback ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+            }`}>
+              <MarkdownContent 
+                contentPath="/src/content/home-description.md"
+                className="text-left"
+              />
+              <p className="mt-2 text-gray-600">
+                Upload your kana homework for instant feedback and practice suggestions
+              </p>
+            </div>
           </div>
+
+          {needsApiKey ? (
+            <div className="rounded-lg bg-white p-6 shadow">
+              <h2 className="mb-4 text-xl font-semibold">OpenAI API Key Required</h2>
+              <p className="mb-4 text-gray-600">
+                Please enter your OpenAI API key to analyze your homework.
+              </p>
+              <ApiKeyInput onApiKeySet={handleApiKeySet} />
+            </div>
+          ) : (
+            <FileUpload onFileSelect={handleFileSelect} />
+          )}
+
+          {error && (
+            <div className="rounded-md bg-red-50 p-4">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+
+          {loading && <LoadingAnimation />}
+
+          {!loading && feedback && (
+            <div className="space-y-6">
+              <FeedbackDisplay feedback={feedback} />
+            </div>
+          )}
         </div>
-
-        {needsApiKey ? (
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h2 className="mb-4 text-xl font-semibold">OpenAI API Key Required</h2>
-            <p className="mb-4 text-gray-600">
-              Please enter your OpenAI API key to analyze your homework.
-            </p>
-            <ApiKeyInput onApiKeySet={handleApiKeySet} />
-          </div>
-        ) : (
-          <FileUpload onFileSelect={handleFileSelect} />
-        )}
-
-        {error && (
-          <div className="rounded-md bg-red-50 p-4">
-            <p className="text-sm text-red-700">{error}</p>
-          </div>
-        )}
-
-        {loading && <LoadingAnimation />}
-
-        {!loading && feedback && (
-          <div className="space-y-6">
-            <FeedbackDisplay feedback={feedback} />
-          </div>
-        )}
-      </div>
+      </main>
     </div>
   )
 }
