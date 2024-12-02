@@ -47,7 +47,7 @@ const LoadingAnimation = () => {
       <div className="relative">
         {/* Ink drop effect */}
         <div className="absolute inset-0 bg-indigo-100 rounded-full animate-ping opacity-20" />
-        
+
         {/* Writing paper effect */}
         <div className="relative w-32 h-32 bg-white rounded-lg shadow-lg border-2 border-gray-200 flex items-center justify-center">
           {/* Grid lines like Japanese writing paper */}
@@ -55,14 +55,14 @@ const LoadingAnimation = () => {
             <div className="border-r border-gray-200" />
             <div className="border-l border-gray-200" />
           </div>
-          
+
           {/* Animated kana character */}
           <span className="text-6xl text-indigo-600 animate-bounce">
             {kanaCharacters[currentChar]}
           </span>
         </div>
       </div>
-      
+
       <div className="flex flex-col items-center space-y-2">
         <p className="text-lg font-medium text-gray-700">Analyzing your homework...</p>
         <p className="text-sm text-gray-500 italic min-h-[1.5rem] transition-opacity duration-300">
@@ -94,7 +94,7 @@ export default function HomeworkHelper() {
       setLoading(true)
       setError(null)
       setFeedback(null)
-      
+
       // Create preview URL for the selected image
       setSelectedImage(URL.createObjectURL(file))
 
@@ -141,18 +141,14 @@ export default function HomeworkHelper() {
               </svg>
               Kana Practice Helper
             </h1>
-            <div className={`mt-4 max-w-2xl mx-auto overflow-hidden transition-all duration-300 ease-in-out ${
-              !loading && !feedback ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-            }`}>
+            <div className={`mt-4 max-w-2xl mx-auto overflow-hidden transition-all duration-300 ease-in-out ${!loading && !feedback ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+              }`}>
               <div className="bg-indigo-50 rounded-lg p-4 mb-6">
-                <MarkdownContent 
+                <MarkdownContent
                   content={homeDescription}
                   className="text-left text-sm"
                 />
               </div>
-              <p className="text-lg text-gray-600 font-medium">
-                Upload your kana homework for feedback and practice suggestions
-              </p>
             </div>
           </div>
 
@@ -160,14 +156,14 @@ export default function HomeworkHelper() {
             <div className="rounded-lg bg-white p-6 shadow">
               <h2 className="mb-4 text-xl font-semibold">OpenAI API Key Required</h2>
               <p className="mb-4 text-gray-600">
-                Please enter your OpenAI API key to analyze your homework. 
+                Please enter your OpenAI API key to analyze your homework.
                 The key will only be stored in your browser and sent directly to OpenAI's servers.
               </p>
               <p className="mb-4 text-sm text-gray-500">
                 Don't have an API key?{' '}
-                <a 
-                  href="https://platform.openai.com/api-keys" 
-                  target="_blank" 
+                <a
+                  href="https://platform.openai.com/api-keys"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-indigo-600 hover:text-indigo-500 underline"
                 >
@@ -177,7 +173,12 @@ export default function HomeworkHelper() {
               <ApiKeyInput onApiKeySet={handleApiKeySet} />
             </div>
           ) : (
-            <FileUpload onFileSelect={handleFileSelect} />
+            <>
+              <p className="text-lg text-gray-600 font-medium">
+                Upload your kana homework for feedback and practice suggestions.
+              </p>
+              <FileUpload onFileSelect={handleFileSelect} />
+            </>
           )}
 
           {error && (

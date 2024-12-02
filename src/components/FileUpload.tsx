@@ -55,11 +55,16 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
       />
       <div className="flex flex-col items-center gap-2">
         <Upload className="h-8 w-8 text-gray-500" />
-        <p className="text-sm text-gray-500">
-          Drag and drop your kana homework image, or click to select
-        </p>
+        <div className="space-y-3 w-full">
+          <p className="text-sm text-gray-500">
+            Drag and drop your kana homework image, or click to select
+          </p>
+          <p className="text-xs text-gray-400 text-left">
+            Note: The system expects images where typed or printed text shows the instructions, 
+            and handwritten text shows your answers.
+          </p>
+        </div>
       </div>
     </div>
   )
 }
-
