@@ -6,6 +6,7 @@ import { FeedbackDisplay } from './FeedbackDisplay'
 import { ApiKeyInput } from './ApiKeyInput'
 import { analyzeImage } from '../services/openai'
 import type { HomeworkFeedback } from '../services/openai'
+import { MarkdownContent } from './MarkdownContent'
 
 const kanaCharacters = ['あ', 'い', 'う', 'え', 'お', 'か', 'き', 'く', 'け', 'こ']
 
@@ -117,12 +118,20 @@ export default function HomeworkHelper() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <div className="mx-auto max-w-3xl space-y-8">
+      <div className="mx-auto max-w-3xl space-y-6">
         <div className="text-center">
           <h1 className="text-4xl font-bold">Kana Homework Helper</h1>
-          <p className="mt-2 text-gray-600">
-            Upload your kana homework for instant feedback and practice suggestions
-          </p>
+          <div className={`mt-4 max-w-2xl mx-auto overflow-hidden transition-all duration-300 ease-in-out ${
+            !loading && !feedback ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+          }`}>
+            <MarkdownContent 
+              contentPath="/src/content/home-description.md"
+              className="text-left"
+            />
+            <p className="mt-2 text-gray-600">
+              Upload your kana homework for instant feedback and practice suggestions
+            </p>
+          </div>
         </div>
 
         {needsApiKey ? (
