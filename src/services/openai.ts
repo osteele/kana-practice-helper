@@ -6,6 +6,9 @@ import { sha256 } from '../utils/cacheUtils';
 import { createCacheRequest, getCache } from '../utils/cache';
 
 const USER_PROMPT = `
+The attached image is a scan of a homework assignment of kana. Your task is to analyze the image and provide feedback to the user.
+In the image, the instructions are typeset. The user response is handwritten. Correct the user resonse, not the typeset material.
+
 1. Provide general feedback on the kana homework image, such as positive reinforcement and encouragement.
 2. Analyze the image to identify any mismatches between the kana and their romanizations. Provide corrections and explain why the corrected romanizations are accurate based on Japanese phonetic rules.
 3. Using the kana and romanizations in the image, provide simple Japanese words or sentences that include these kana. Include the English meanings to reinforce understanding.
