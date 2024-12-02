@@ -20,12 +20,64 @@ Kana Homework Helper is a web application that assists users in learning and pra
 - [Next.js](https://nextjs.org/) - React framework for server-side rendering and API routes
 - [OpenAI API](https://openai.com/api/) - For image analysis and feedback generation
 
-## Prerequisites
+## Getting Started
+
+### Prerequisites
 
 - [Bun](https://bun.sh/) installed on your machine
 - An OpenAI API key
 
-## Setup
+### Installation
 
 1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/kana-homework-helper.git
+   cd kana-homework-helper
+   ```
 
+2. Install dependencies:
+   ```bash
+   bun install
+   ```
+
+3. Create a `.env` file in the root directory and add your OpenAI API key:
+   ```env
+   OPENAI_API_KEY=your_api_key_here
+   ```
+
+4. Start the development server:
+   ```bash
+   bun run dev
+   ```
+
+5. Open your browser and navigate to `http://localhost:5173`
+
+## Usage
+
+1. **Upload Image**: Click the upload button or drag and drop an image of your handwritten kana homework
+2. **Enter API Key**: On first use, enter your OpenAI API key when prompted
+3. **View Feedback**: The app will analyze your handwriting and provide:
+   - General feedback on your writing
+   - Specific corrections for any miswritten characters
+   - Example words and sentences using the characters in your homework
+   - Practice suggestions and mnemonic devices
+
+## Contributing
+
+I welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to:
+- Set up the development environment
+- Run tests
+- Submit pull requests
+- Report issues
+
+## License
+
+Copyright © 2024 [Oliver Steele](https://github.com/osteele)
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- OpenAI for providing the Vision API
+- The React and Vite communities for excellent tools and documentation
+- All contributors who help improve this project
