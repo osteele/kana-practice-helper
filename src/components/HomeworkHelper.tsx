@@ -160,7 +160,19 @@ export default function HomeworkHelper() {
             <div className="rounded-lg bg-white p-6 shadow">
               <h2 className="mb-4 text-xl font-semibold">OpenAI API Key Required</h2>
               <p className="mb-4 text-gray-600">
-                Please enter your OpenAI API key to analyze your homework.
+                Please enter your OpenAI API key to analyze your homework. 
+                The key will only be stored in your browser and sent directly to OpenAI's servers.
+              </p>
+              <p className="mb-4 text-sm text-gray-500">
+                Don't have an API key?{' '}
+                <a 
+                  href="https://platform.openai.com/api-keys" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:text-indigo-500 underline"
+                >
+                  Get one from OpenAI
+                </a>
               </p>
               <ApiKeyInput onApiKeySet={handleApiKeySet} />
             </div>
