@@ -1,20 +1,19 @@
-import { cookies } from 'next/headers'
+// Utility function to manage OpenAI API key in localStorage
+// Note: In a production environment, consider using more secure storage methods
 
-export async function POST(req: Request) {
-  const { apiKey } = await req.json()
-  
+export function setApiKey(apiKey: string): void {
   if (!apiKey) {
-    return new Response('API key is required', { status: 400 })
+    throw new Error('API key is required')
   }
-
-  // Set the API key in an HTTP-only cookie
-  cookies().set('openai-api-key', apiKey, { 
-    httpOnly: true, 
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 30 * 24 * 60 * 60 // 30 days
-  })
-
-  return new Response('API key set successfully', { status: 200 })
+  
+  // Store the API key in localStorage
+  localStorage.setItem('openai-api-key', apiKey)
 }
 
+export function getApiKey(): string | null {
+  return localStorage.getItem('openai-api-key')
+}
+
+export function removeApiKey(): void {
+  localStorage.removeItem('openai-api-key')
+}

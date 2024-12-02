@@ -1,15 +1,32 @@
 import OpenAI from 'openai';
 import { z } from 'zod';
-import { zodResponseFormat } from "openai/helpers/zod";
+import { zodResponseFormat } from 'openai/helpers/zod';
 import { resizeImage } from '../utils/imageUtils';
 import { createCacheKey } from '../utils/cacheUtils';
 
+const USER_PROMPT = `
+1. Provide general feedback on the kana homework image, such as positive reinforcement and encouragement.
+2. Analyze the image to identify any mismatches between the kana and their romanizations. Provide corrections and explain why the corrected romanizations are accurate based on Japanese phonetic rules.
+3. Using the kana and romanizations in the image, provide simple Japanese words or sentences that include these kana. Include the English meanings to reinforce understanding.
+4. Create mnemonic devices for each mistaken kana in the image to help learners remember their pronunciations. For example, relate the shape of the kana to an English word or sound.
+5. Describe patterns or visual cues in the mistaken kana from the image that might help the learner distinguish and remember them. For example, explain how similar-looking kana can be differentiated.
+`
+
 const homeworkAnalysisSchema = z.object({
-  feedback: z.string().describe('Detailed feedback on the writing, including any errors or areas for improvement'),
+  generalFeedback: z.string().describe('General feedback on the homework with positive reinforcement.'),
+  kanaRomanizationMismatches: z.array(z.object({
+    kana: z.string(),
+    romanization: z.string(),
+    correction: z.string(),
+    explanation: z.string()
+  })).describe('List of kana and their romanization mismatches'),
+  sampleWordsAndSentences: z.array(z.string()).describe('List of sample words and sentences that use the kana in the homework image'),
+  mnemonicDevices: z.array(z.string()).describe('List of mnemonic devices for each kana in the homework image').optional(), 
+  visualPatterns: z.array(z.string()).describe('List of visual patterns in the homework image').optional(), 
   words: z.array(z.string()).describe('List of all kana words that appear in the homework')
 });
 
-type HomeworkFeedback = z.infer<typeof homeworkAnalysisSchema>;
+export type HomeworkFeedback = z.infer<typeof homeworkAnalysisSchema>;
 
 const CACHE_NAME = 'kana-homework-analysis';
 
@@ -23,12 +40,13 @@ async function analyzeImageWithOpenAI(file: File, apiKey: string): Promise<Homew
     model: "gpt-4o-mini",
     messages: [
       {
+        role: "system",
+        content: "You are a helpful assistant who can analyze kana homework images."
+      },
+      {
         role: "user",
         content: [
-          {
-            type: "text",
-            text: "Analyze this Japanese kana homework assignment. Provide detailed feedback on the writing, including any errors or areas for improvement. Format your feedback in markdown, using headings, bullet points, and emphasis where appropriate. Also identify all the words that appear in the homework."
-          },
+          { type: "text", text: USER_PROMPT },
           {
             type: "image_url",
             image_url: {
@@ -56,43 +74,24 @@ async function analyzeImageWithOpenAI(file: File, apiKey: string): Promise<Homew
 }
 
 export async function analyzeImage(file: File, apiKey: string): Promise<HomeworkFeedback> {
-  try {
-    // Get or create the cache
-    const cache = await caches.open(CACHE_NAME);
-    
-    // Generate cache key based on file content and schema
-    const cacheKey = await createCacheKey(file, homeworkAnalysisSchema);
-    
-    // Try to get the cached response
-    const cachedResponse = await cache.match(cacheKey);
-    if (cachedResponse) {
-      const cachedData = await cachedResponse.json();
-      return cachedData as HomeworkFeedback;
+  const cacheKey = await createCacheKey(file, USER_PROMPT, homeworkAnalysisSchema);
+  const cachedResult = localStorage.getItem(`${CACHE_NAME}-${cacheKey}`);
+  
+  if (cachedResult) {
+    try {
+      return JSON.parse(cachedResult) as HomeworkFeedback;
+    } catch (error) {
+      console.warn("Failed to parse cached result:", error);
     }
-    
-    // If not in cache, analyze the image
-    const analysis = await analyzeImageWithOpenAI(file, apiKey);
-    
-    // Cache the result
-    await cache.put(
-      cacheKey,
-      new Response(JSON.stringify(analysis), {
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=31536000' // Cache for 1 year
-        }
-      })
-    );
-    
-    return analysis;
-  } catch (error) {
-    console.error('OpenAI API error:', error);
-    
-    // Handle rate limiting error specifically
-    if (error instanceof Error && error.message.includes('rate limit exceeded')) {
-      throw new Error('API rate limit exceeded. Please try again in about an hour.');
-    }
-    
-    throw new Error('Failed to analyze image');
   }
+
+  const result = await analyzeImageWithOpenAI(file, apiKey);
+  
+  try {
+    localStorage.setItem(`${CACHE_NAME}-${cacheKey}`, JSON.stringify(result));
+  } catch (error) {
+    console.warn("Failed to cache analysis result:", error);
+  }
+
+  return result;
 }

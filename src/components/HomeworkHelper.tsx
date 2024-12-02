@@ -5,14 +5,13 @@ import { FileUpload } from './FileUpload'
 import { FeedbackDisplay } from './FeedbackDisplay'
 import { ApiKeyInput } from './ApiKeyInput'
 import { analyzeImage } from '../services/openai'
-import type { ApiResponse } from '../types/kana'
+import type { HomeworkFeedback } from '../services/openai'
 
 export default function HomeworkHelper() {
   const [loading, setLoading] = useState(false)
-  const [feedback, setFeedback] = useState<ApiResponse['feedback'] | null>(null)
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [feedback, setFeedback] = useState<HomeworkFeedback | null>(null)
+  const [_selectedImage, setSelectedImage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [words, setWords] = useState<string[]>([])
   const [needsApiKey, setNeedsApiKey] = useState(() => !localStorage.getItem('openai-api-key'))
   const [pendingFile, setPendingFile] = useState<File | null>(null)
 
@@ -42,13 +41,11 @@ export default function HomeworkHelper() {
 
       // Send to OpenAI
       const result = await analyzeImage(file, apiKey)
-      setFeedback(result.feedback)
-      setWords(result.words)
+      setFeedback(result)
     } catch (error) {
       console.error('Error:', error)
       setError(error instanceof Error ? error.message : 'An error occurred')
       setFeedback(null)
-      setWords([])
     } finally {
       setLoading(false)
     }
@@ -91,16 +88,6 @@ export default function HomeworkHelper() {
         {feedback && (
           <div className="space-y-6">
             <FeedbackDisplay feedback={feedback} />
-            {words.length > 0 && (
-              <div className="rounded-lg bg-white p-6 shadow">
-                <h2 className="mb-4 text-xl font-semibold">Words Found</h2>
-                <ul className="list-inside list-disc space-y-2">
-                  {words.map((word, index) => (
-                    <li key={index} className="text-gray-700">{word}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
         )}
       </div>

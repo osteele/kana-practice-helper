@@ -11,7 +11,7 @@ async function sha256(message: string): Promise<string> {
 /**
  * Creates a cache key URL for the given file and schema
  */
-export async function createCacheKey(file: File, schema: unknown): Promise<string> {
+export async function createCacheKey(file: File, userPrompt: string, schema: unknown): Promise<string> {
   // Read the file as ArrayBuffer
   const fileContent = await file.arrayBuffer();
   // Convert ArrayBuffer to Base64
@@ -21,8 +21,10 @@ export async function createCacheKey(file: File, schema: unknown): Promise<strin
   
   // Create hashes of both the file content and schema
   const fileHash = await sha256(fileBase64);
+  const userPromptHash = await sha256(userPrompt);
   const schemaHash = await sha256(JSON.stringify(schema));
+  const cacheKey = await sha256(`${fileHash}${userPromptHash}${schemaHash}`);
   
   // Combine hashes into a fictitious URL
-  return `https://cache.kana-helper.local/analysis/${fileHash}/${schemaHash}`;
+  return `https://cache.kana-helper.local/analysis/${cacheKey}`;
 }
