@@ -14,6 +14,7 @@ In the image, the instructions are typeset. The user response is handwritten. Co
 3. Using the kana and romanizations in the image, provide simple Japanese words or sentences that include these kana. Include the English meanings to reinforce understanding.
 4. Create mnemonic devices for each mistaken kana in the image to help learners remember their pronunciations. For example, relate the shape of the kana to an English word or sound.
 5. Describe patterns or visual cues in the mistaken kana from the image that might help the learner distinguish and remember them. For example, explain how similar-looking kana can be differentiated.
+6. Create a set of practice questions that match the format in the image. Use the same format; for example, if the homework asks the user to write the romaji for kana, the follow-up exercises should do the same. Use the kana that appear in the image, or other kana in the same column of the gojuon.
 `
 
 const homeworkAnalysisSchema = z.object({
@@ -27,7 +28,8 @@ const homeworkAnalysisSchema = z.object({
   sampleWordsAndSentences: z.array(z.string()).describe('List of sample words and sentences that use the kana in the homework image'),
   mnemonicDevices: z.array(z.string()).describe('List of mnemonic devices for each kana in the homework image').optional(), 
   visualPatterns: z.array(z.string()).describe('List of visual patterns in the homework image').optional(), 
-  words: z.array(z.string()).describe('List of all kana words that appear in the homework')
+  words: z.array(z.string()).describe('List of all kana words that appear in the homework'),
+  followUpExercises: z.array(z.string()).describe('Follow-up exercise for the user to practice the kana in the homework image'),
 });
 
 export type HomeworkFeedback = z.infer<typeof homeworkAnalysisSchema>;
