@@ -1,11 +1,74 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FileUpload } from './FileUpload'
 import { FeedbackDisplay } from './FeedbackDisplay'
 import { ApiKeyInput } from './ApiKeyInput'
 import { analyzeImage } from '../services/openai'
 import type { HomeworkFeedback } from '../services/openai'
+
+const kanaCharacters = ['あ', 'い', 'う', 'え', 'お', 'か', 'き', 'く', 'け', 'こ']
+
+const loadingPhrases = [
+  "Looking at each character carefully...",
+  "Checking stroke order and balance...",
+  "Comparing with reference kana...",
+  "Finding similar characters to practice...",
+  "Preparing helpful examples...",
+  "Creating practice exercises...",
+  "Looking for learning patterns..."
+]
+
+const LoadingAnimation = () => {
+  const [currentChar, setCurrentChar] = useState(0)
+  const [currentPhrase, setCurrentPhrase] = useState(0)
+
+  // Update character and phrase
+  useEffect(() => {
+    const charInterval = setInterval(() => {
+      setCurrentChar((prev) => (prev + 1) % kanaCharacters.length)
+    }, 500)
+
+    const phraseInterval = setInterval(() => {
+      setCurrentPhrase((prev) => (prev + 1) % loadingPhrases.length)
+    }, 2000)
+
+    return () => {
+      clearInterval(charInterval)
+      clearInterval(phraseInterval)
+    }
+  }, [])
+
+  return (
+    <div className="flex flex-col items-center justify-center p-8 space-y-6">
+      <div className="relative">
+        {/* Ink drop effect */}
+        <div className="absolute inset-0 bg-indigo-100 rounded-full animate-ping opacity-20" />
+        
+        {/* Writing paper effect */}
+        <div className="relative w-32 h-32 bg-white rounded-lg shadow-lg border-2 border-gray-200 flex items-center justify-center">
+          {/* Grid lines like Japanese writing paper */}
+          <div className="absolute inset-0 grid grid-cols-2 gap-4 p-2 pointer-events-none">
+            <div className="border-r border-gray-200" />
+            <div className="border-l border-gray-200" />
+          </div>
+          
+          {/* Animated kana character */}
+          <span className="text-6xl text-indigo-600 animate-bounce">
+            {kanaCharacters[currentChar]}
+          </span>
+        </div>
+      </div>
+      
+      <div className="flex flex-col items-center space-y-2">
+        <p className="text-lg font-medium text-gray-700">Analyzing your homework...</p>
+        <p className="text-sm text-gray-500 italic min-h-[1.5rem] transition-opacity duration-300">
+          {loadingPhrases[currentPhrase]}
+        </p>
+      </div>
+    </div>
+  )
+}
 
 export default function HomeworkHelper() {
   const [loading, setLoading] = useState(false)
@@ -27,6 +90,7 @@ export default function HomeworkHelper() {
     try {
       setLoading(true)
       setError(null)
+      setFeedback(null)
       
       // Create preview URL for the selected image
       setSelectedImage(URL.createObjectURL(file))
@@ -79,13 +143,9 @@ export default function HomeworkHelper() {
           </div>
         )}
 
-        {loading && (
-          <div className="text-center">
-            <p className="text-gray-600">Analyzing your homework...</p>
-          </div>
-        )}
+        {loading && <LoadingAnimation />}
 
-        {feedback && (
+        {!loading && feedback && (
           <div className="space-y-6">
             <FeedbackDisplay feedback={feedback} />
           </div>

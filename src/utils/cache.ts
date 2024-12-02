@@ -1,8 +1,17 @@
 // Cache name for storing OpenAI responses
 const CACHE_NAME = "openai-responses-v1";
 
+// Helper function to check if caching should be disabled
+export function shouldDisableCache(): boolean {
+  return window.location.hash === '#no-cache';
+}
+
 // Helper function to get or create cache
 export async function getCache(): Promise<Cache|null> {
+  if (shouldDisableCache()) {
+    return null;
+  }
+  
   if ("caches" in window) {
     return await caches.open(CACHE_NAME);
   }
