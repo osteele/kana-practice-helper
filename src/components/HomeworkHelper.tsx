@@ -8,6 +8,7 @@ import { analyzeImage } from '../services/openai'
 import type { HomeworkFeedback } from '../services/openai'
 import { MarkdownContent } from './MarkdownContent'
 import { Header } from './Header'
+import homeDescription from '../content/home-description.md'
 
 const kanaCharacters = ['あ', 'い', 'う', 'え', 'お', 'か', 'き', 'く', 'け', 'こ']
 
@@ -123,16 +124,34 @@ export default function HomeworkHelper() {
       <main className="p-8">
         <div className="mx-auto max-w-3xl space-y-6">
           <div className="text-center">
-            <h1 className="text-4xl font-bold">Kana Homework Helper</h1>
+            <h1 className="text-4xl font-bold flex items-center justify-center gap-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-10 h-10 text-indigo-600"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42"
+                />
+              </svg>
+              Kana Practice Helper
+            </h1>
             <div className={`mt-4 max-w-2xl mx-auto overflow-hidden transition-all duration-300 ease-in-out ${
               !loading && !feedback ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
             }`}>
-              <MarkdownContent 
-                contentPath="/src/content/home-description.md"
-                className="text-left"
-              />
-              <p className="mt-2 text-gray-600">
-                Upload your kana homework for instant feedback and practice suggestions
+              <div className="bg-indigo-50 rounded-lg p-4 mb-6">
+                <MarkdownContent 
+                  content={homeDescription}
+                  className="text-left text-sm"
+                />
+              </div>
+              <p className="text-lg text-gray-600 font-medium">
+                Upload your kana homework for feedback and practice suggestions
               </p>
             </div>
           </div>
