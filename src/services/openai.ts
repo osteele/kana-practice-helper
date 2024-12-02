@@ -2,7 +2,8 @@ import OpenAI from 'openai';
 import { z } from 'zod';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { resizeImage } from '../utils/imageUtils';
-import { createCacheKey } from '../utils/cacheUtils';
+import { sha256 } from '../utils/cacheUtils';
+import { createCacheRequest, getCache } from '../utils/cache';
 
 const USER_PROMPT = `
 1. Provide general feedback on the kana homework image, such as positive reinforcement and encouragement.
@@ -28,37 +29,11 @@ const homeworkAnalysisSchema = z.object({
 
 export type HomeworkFeedback = z.infer<typeof homeworkAnalysisSchema>;
 
-const CACHE_NAME = 'kana-homework-analysis';
+type ChatCompletionFunctionParam = Parameters<typeof OpenAI.prototype.beta.chat.completions.parse>[0];
 
-async function analyzeImageWithOpenAI(file: File, apiKey: string): Promise<HomeworkFeedback> {
+async function callAndParseCompletion<T>(apiKey: string, params: ChatCompletionFunctionParam): Promise<T> {
   const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
-
-  // Resize the image before sending
-  const base64Image = await resizeImage(file);
-
-  const response = await openai.beta.chat.completions.parse({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: "You are a helpful assistant who can analyze kana homework images."
-      },
-      {
-        role: "user",
-        content: [
-          { type: "text", text: USER_PROMPT },
-          {
-            type: "image_url",
-            image_url: {
-              url: `data:image/jpeg;base64,${base64Image}`
-            }
-          }
-        ]
-      }
-    ],
-    response_format: zodResponseFormat(homeworkAnalysisSchema, "analysis")
-  });
-
+  const response = await openai.beta.chat.completions.parse(params);
   const message = response.choices[0]?.message;
   if (!message) {
     throw new Error("No response received from OpenAI");
@@ -66,32 +41,65 @@ async function analyzeImageWithOpenAI(file: File, apiKey: string): Promise<Homew
   if (message.refusal) {
     throw new Error(`AI refused to generate content: ${message.refusal}`);
   }
-  const feedback = message.parsed as HomeworkFeedback | undefined;
+  const feedback = message.parsed as T | undefined;
   if (!feedback) {
     throw new Error("Invalid response format from OpenAI");
   }
   return feedback;
 }
 
-export async function analyzeImage(file: File, apiKey: string): Promise<HomeworkFeedback> {
-  const cacheKey = await createCacheKey(file, USER_PROMPT, homeworkAnalysisSchema);
-  const cachedResult = localStorage.getItem(`${CACHE_NAME}-${cacheKey}`);
-  
-  if (cachedResult) {
+async function cachedOpenAIResponseCall<T>(apiKey: string, params: ChatCompletionFunctionParam): Promise<T> {
+  const cache = await getCache();
+  const cacheKey = await sha256(JSON.stringify(params));
+  const cacheRequest = createCacheRequest(cacheKey);
+  const cachedResponse = cache ? await cache.match(cacheRequest) : null;
+  if (cachedResponse) {
+    const data = await cachedResponse.json();
+    return data as T;
+  }
+  const result = await callAndParseCompletion<T>(apiKey, params);
+
+  if (cache) {
     try {
-      return JSON.parse(cachedResult) as HomeworkFeedback;
+      const cacheRequest = createCacheRequest(cacheKey);
+      const response = new Response(JSON.stringify(result), {
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Key": cacheKey,
+        },
+      });
+      await cache.put(cacheRequest, response);
     } catch (error) {
-      console.warn("Failed to parse cached result:", error);
+      console.error("Failed to store in cache:", error);
     }
   }
 
-  const result = await analyzeImageWithOpenAI(file, apiKey);
-  
-  try {
-    localStorage.setItem(`${CACHE_NAME}-${cacheKey}`, JSON.stringify(result));
-  } catch (error) {
-    console.warn("Failed to cache analysis result:", error);
-  }
-
   return result;
+}
+
+export async function analyzeImage(file: File, apiKey: string): Promise<HomeworkFeedback> {
+  const base64Image = await resizeImage(file);
+  const params: ChatCompletionFunctionParam = {
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful assistant who can analyze kana homework images."
+        },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: USER_PROMPT },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Image}`
+              }
+            }
+          ]
+        }
+      ],
+      response_format: zodResponseFormat(homeworkAnalysisSchema, "analysis")
+  }
+  return cachedOpenAIResponseCall(apiKey, params);
 }
