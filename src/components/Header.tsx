@@ -3,7 +3,7 @@ export function Header() {
     <header className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <span className="text-xl font-semibold text-indigo-600">仮名</span>
+          <span className="text-xl font-semibold text-slate-600">かな練習ヘルパー</span>
         </div>
         <a
           href="https://github.com/osteele/kana-practice-helper"
