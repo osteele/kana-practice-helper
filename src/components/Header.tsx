@@ -3,7 +3,12 @@ export function Header() {
     <header className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <span className="text-xl font-semibold text-slate-600">かな練習ヘルパー</span>
+          <span className="text-xl font-semibold text-slate-600">
+            かな練習ヘルパー
+            <span className="text-sm font-normal text-slate-400 ml-2">
+              ("Kana Practice Helper")
+            </span>
+          </span>
         </div>
         <a
           href="https://github.com/osteele/kana-practice-helper"
