@@ -20,6 +20,7 @@ export function ApiKeyInput({ onApiKeySet }: ApiKeyInputProps) {
       localStorage.setItem('openai-api-key', apiKey)
       onApiKeySet()
     } catch (err) {
+      console.error(err);
       setError('Failed to save API key. Please try again.')
     } finally {
       setIsLoading(false)

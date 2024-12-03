@@ -11,7 +11,7 @@ function extractUniqueKana(words: string[]): string[] {
 }
 
 interface FeedbackDisplayProps {
-  imageUrl?: string;
+  imageUrl?: string | null;
   feedback: {
     generalFeedback: string;
     kanaRomanizationMismatches: Array<{
