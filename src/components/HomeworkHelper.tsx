@@ -76,7 +76,7 @@ const LoadingAnimation = () => {
 export default function HomeworkHelper() {
   const [loading, setLoading] = useState(false)
   const [feedback, setFeedback] = useState<HomeworkFeedback | null>(null)
-  const [_selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [needsApiKey, setNeedsApiKey] = useState(() => !localStorage.getItem('openai-api-key'))
   const [pendingFile, setPendingFile] = useState<File | null>(null)
@@ -173,12 +173,7 @@ export default function HomeworkHelper() {
               <ApiKeyInput onApiKeySet={handleApiKeySet} />
             </div>
           ) : (
-            <>
-              <p className="text-lg text-gray-600 font-medium">
-                Upload your kana homework for feedback and practice suggestions.
-              </p>
               <FileUpload onFileSelect={handleFileSelect} />
-            </>
           )}
 
           {error && (
@@ -189,9 +184,11 @@ export default function HomeworkHelper() {
 
           {loading && <LoadingAnimation />}
 
-          {!loading && feedback && (
+          {feedback && (
             <div className="space-y-6">
-              <FeedbackDisplay feedback={feedback} />
+              <div className="bg-white rounded-lg shadow">
+                <FeedbackDisplay feedback={feedback} imageUrl={selectedImage} />
+              </div>
             </div>
           )}
         </div>

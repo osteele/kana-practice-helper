@@ -9,15 +9,18 @@ const USER_PROMPT = `
 The attached image is a scan of a homework assignment of kana. Your task is to analyze the image and provide feedback to the user.
 In the image, the instructions are typeset. The user response is handwritten. Correct the user resonse, not the typeset material.
 
-1. Provide general feedback on the kana homework image, such as positive reinforcement and encouragement.
-2. Analyze the image to identify any mismatches between the kana and their romanizations. Provide corrections and explain why the corrected romanizations are accurate based on Japanese phonetic rules.
-3. Using the kana and romanizations in the image, provide simple Japanese words or sentences that include these kana. Include the English meanings to reinforce understanding.
-4. Create mnemonic devices for each mistaken kana in the image to help learners remember their pronunciations. For example, relate the shape of the kana to an English word or sound.
-5. Describe patterns or visual cues in the mistaken kana from the image that might help the learner distinguish and remember them. For example, explain how similar-looking kana can be differentiated.
-6. Create a set of practice questions that match the format in the image. Use the same format; for example, if the homework asks the user to write the romaji for kana, the follow-up exercises should do the same. Use the kana that appear in the image, or other kana in the same column of the gojuon.
+- Provide general feedback on the kana homework image, such as positive reinforcement and encouragement.
+- Analyze the image to identify any mismatches between the kana and their romanizations. Provide corrections and explain why the corrected romanizations are accurate based on Japanese phonetic rules.
+- Using the kana and romanizations in the image, provide simple Japanese words or sentences that include these kana. Include the English meanings to reinforce understanding.
+- Create mnemonic devices for each mistaken kana in the image to help learners remember their pronunciations. For example, relate the shape of the kana to an English word or sound.
+- Describe patterns or visual cues in the mistaken kana from the image that might help the learner distinguish and remember them. For example, explain how similar-looking kana can be differentiated.
+- Create a set of practice questions that match the format in the image. Use the same format; for example, if the homework asks the user to write the romaji for kana, the follow-up exercises should do the same. Use the kana that appear in the image, or other kana in the same column of the gojuon. Don't give away the answer - if you are asking the student for romaji, don't also show it to them. 
 `
 
 const homeworkAnalysisSchema = z.object({
+  kanaWords: z.array(z.string()).describe('List of all kana words that appear in the homework'),
+  gojuonAreas: z.string().describe('List of gojuon columns that appear in the homework'),
+  learningGoals: z.array(z.string()).describe('List of learning goals the this homework appears to be trying to address'),
   generalFeedback: z.string().describe('General feedback on the homework with positive reinforcement.'),
   kanaRomanizationMismatches: z.array(z.object({
     kana: z.string(),
@@ -28,7 +31,6 @@ const homeworkAnalysisSchema = z.object({
   sampleWordsAndSentences: z.array(z.string()).describe('List of sample words and sentences that use the kana in the homework image'),
   mnemonicDevices: z.array(z.string()).describe('List of mnemonic devices for each kana in the homework image').optional(), 
   visualPatterns: z.array(z.string()).describe('List of visual patterns in the homework image').optional(), 
-  words: z.array(z.string()).describe('List of all kana words that appear in the homework'),
   followUpExercises: z.array(z.string()).describe('Follow-up exercise for the user to practice the kana in the homework image'),
 });
 
