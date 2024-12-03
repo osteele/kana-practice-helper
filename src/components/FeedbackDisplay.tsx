@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { HomeworkFeedback } from '../services/openai';
 
 // Utility function to get unique characters from strings
 function extractUniqueKana(words: string[]): string[] {
@@ -12,22 +13,7 @@ function extractUniqueKana(words: string[]): string[] {
 
 interface FeedbackDisplayProps {
   imageUrl?: string | null;
-  feedback: {
-    generalFeedback: string;
-    kanaRomanizationMismatches: Array<{
-      kana: string;
-      romanization: string;
-      correction: string;
-      explanation: string;
-    }>;
-    sampleWordsAndSentences: string[];
-    mnemonicDevices?: string[];
-    visualPatterns?: string[];
-    kanaWords: string[];
-    followUpExercises: string[];
-    gojuonAreas: string;
-    learningGoals: string[];
-  } | null;
+  feedback: HomeworkFeedback | null;
 }
 
 export function FeedbackDisplay({ feedback, imageUrl }: FeedbackDisplayProps) {
